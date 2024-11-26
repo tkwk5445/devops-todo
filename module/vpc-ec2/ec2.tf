@@ -7,7 +7,7 @@ resource "aws_instance" "ec2" {
   vpc_security_group_ids = [aws_security_group.ec2-sg.id]
 
   root_block_device {
-    volume_size = 50
+    volume_size = 30
   }
 
   tags = {
@@ -16,7 +16,7 @@ resource "aws_instance" "ec2" {
 
   user_data = <<-EOF
   #!/bin/bash
-  # Install necessary packages
+  # Update and install basic packages
   sudo apt-get update && sudo apt-get install -y \
     gnupg software-properties-common curl unzip apt-transport-https ca-certificates
 
@@ -54,6 +54,14 @@ resource "aws_instance" "ec2" {
   # Enable and start Docker service
   sudo systemctl enable docker
   sudo systemctl start docker
+
+  # Install Docker Compose
+  sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep 'tag_name' | cut -d '"' -f 4)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  sudo chmod +x /usr/local/bin/docker-compose
+  sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+  # Verify Docker Compose installation
+  docker-compose --version
 
   # Install Jenkins (as a container)
   sudo docker network create jenkins
