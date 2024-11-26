@@ -18,7 +18,7 @@ terraform {
     bucket         = "todo-bucket"
     region         = "us-east-2"
     key            = "eks/terraform.tfstate"
-    dynamodb_table = "Lock-Files"
+    dynamodb_table = "todo-tf-locks"
     encrypt        = true
   }
 }
