@@ -15,7 +15,7 @@ terraform {
     }
   }
   backend "s3" {
-    bucket         = "wj-todo-bucket"
+    bucket         = "wj-todo-s3"
     region         = "us-east-2"
     key            = "eks/terraform.tfstate"
     dynamodb_table = "wj-todo-tf-locks"
