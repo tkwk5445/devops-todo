@@ -58,4 +58,4 @@ ec2-iam-role-policy      = "ec2-ssm-role-policy"
 ec2-iam-instance-profile = "ec2-ssm-instance-profile"
 
 # EC2
-ec2-name = "eks-deploy-server"
+ec2-name = "[EKS] Bastion-Jenkins"
