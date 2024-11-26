@@ -11,10 +11,10 @@ terraform {
     }
   }
   backend "s3" {
-    bucket         = "todo-bucket"
+    bucket         = "wj-todo-bucket"
     region         = "us-east-2"
     key            = "vpc/terraform.tfstate"
-    dynamodb_table = "todo-tf-locks"
+    dynamodb_table = "wj-todo-tf-locks"
     encrypt        = true
   }
 }
@@ -24,7 +24,7 @@ provider "aws" {
 }
 
 resource "aws_dynamodb_table" "terraform_locks" {
-  name         = "todo-tf-locks"
+  name         = "wj-todo-tf-locks"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "LockID"
 

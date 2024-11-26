@@ -15,10 +15,10 @@ terraform {
     }
   }
   backend "s3" {
-    bucket         = "todo-bucket"
+    bucket         = "wj-todo-bucket"
     region         = "us-east-2"
     key            = "eks/terraform.tfstate"
-    dynamodb_table = "todo-tf-locks"
+    dynamodb_table = "wj-todo-tf-locks"
     encrypt        = true
   }
 }
