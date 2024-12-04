@@ -22,7 +22,8 @@ variable "pri-sub-name" {}
 variable "public-rt-name" {}
 variable "private-rt-name" {}
 variable "eip-name" {}
-variable "ngw-name" {}
+variable "ngw1-name" {}
+variable "ngw2-name" {}
 variable "eks-sg" {}
 variable "ec2-sg" {}
 

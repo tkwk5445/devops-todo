@@ -105,7 +105,7 @@ resource "aws_eks_node_group" "spot-node" {
     type      = "spot"
     lifecycle = "spot"
   }
-  disk_size = 50
+  disk_size = 30
 
   depends_on = [aws_eks_cluster.eks]
 }

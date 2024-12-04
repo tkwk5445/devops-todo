@@ -104,41 +104,45 @@ resource "aws_eip" "ngw-eip" {
 }
 
 resource "aws_nat_gateway" "ngw" {
-  allocation_id = aws_eip.ngw-eip.id
-  subnet_id     = aws_subnet.public-subnet[0].id
+  count         = length(var.pri-availability-zone) # Number of zones
+  allocation_id = aws_eip.ngw-eip[count.index].id
+  subnet_id     = aws_subnet.public-subnet[count.index].id
 
   tags = {
-    Name = var.ngw-name
+    Name = "${var.ngw1-name}-${var.pri-availability-zone[count.index]}"
   }
 
-  depends_on = [aws_vpc.vpc,
+  depends_on = [
+    aws_vpc.vpc,
     aws_eip.ngw-eip
   ]
 }
 
+# Private Route Table for each availability zone
 resource "aws_route_table" "private-rt" {
+  count  = length(var.pri-availability-zone) # Number of zones
   vpc_id = aws_vpc.vpc.id
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.ngw.id
+    nat_gateway_id = aws_nat_gateway.ngw[count.index].id
   }
 
   tags = {
-    Name = var.private-rt-name
+    Name = "${var.private-rt-name}-${var.pri-availability-zone[count.index]}"
     env  = var.env
   }
 
-  depends_on = [aws_vpc.vpc,
-  ]
+  depends_on = [aws_vpc.vpc]
 }
 
 resource "aws_route_table_association" "private-rt-association" {
-  count          = 3
-  route_table_id = aws_route_table.private-rt.id
+  count          = length(var.pri-cidr-block)
+  route_table_id = aws_route_table.private-rt[count.index].id
   subnet_id      = aws_subnet.private-subnet[count.index].id
 
-  depends_on = [aws_vpc.vpc,
+  depends_on = [
+    aws_vpc.vpc,
     aws_subnet.private-subnet
   ]
 }

@@ -1,4 +1,4 @@
-env                   = "dev"
+env                   = "prod"
 aws-region            = "ap-northeast-2"
 vpc-cidr-block        = "10.16.0.0/16"
 vpc-name              = "vpc"
