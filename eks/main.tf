@@ -21,8 +21,8 @@ module "eks" {
   pri-sub-name          = "${local.env}-${local.org}-${var.pri-sub-name}"
   public-rt-name        = "${local.env}-${local.org}-${var.public-rt-name}"
   private-rt-name       = "${local.env}-${local.org}-${var.private-rt-name}"
-  eip-name              = "${local.env}-${local.org}-${var.eip-name}"
-  ngw-name              = "${local.env}-${local.org}-${var.ngw-name}"
+  eip-names             = [for index, name in var.eip-names : "${local.env}-${local.org}-${name}"] # Elastic IP 리스트 반영
+  natgw-names           = [for index, name in var.natgw-names : "${local.env}-${local.org}-${name}"] # NAT Gateway 리스트 반영
   eks-sg                = var.eks-sg
 
   is_eks_role_enabled           = true

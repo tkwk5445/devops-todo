@@ -13,9 +13,8 @@ pri-availability-zone = ["ap-northeast-2a", "ap-northeast-2c"]
 pri-sub-name          = "private-subnet"
 public-rt-name        = "public-route-table"
 private-rt-name       = "private-route-table"
-eip-name              = "elasticip-natgw"
-ngw1-name              = "natgw-2a"
-ngw2-name              = "natgw-2c"
+eip-names             = ["elasticip-natgw-2a", "elasticip-natgw-2c"] # Elastic IP 이름
+natgw-names           = ["natgw-2a", "natgw-2c"] # NAT Gateway 이름
 eks-sg                = "eks-sg"
 ec2-sg                = "ec2-sg"
 

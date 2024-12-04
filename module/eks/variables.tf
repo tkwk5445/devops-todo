@@ -21,8 +21,12 @@ variable "pri-availability-zone" {
 variable "pri-sub-name" {}
 variable "public-rt-name" {}
 variable "private-rt-name" {}
-variable "eip-name" {}
-variable "ngw-name" {}
+variable "eip-names" {
+  type = list(string)
+}
+variable "natgw-names" {
+  type = list(string)
+}
 variable "eks-sg" {}
 
 #IAM

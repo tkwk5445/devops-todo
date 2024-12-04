@@ -82,7 +82,7 @@ resource "aws_route_table" "public-rt" {
 }
 
 resource "aws_route_table_association" "name" {
-  count          = 3
+  count          = 2
   route_table_id = aws_route_table.public-rt.id
   subnet_id      = aws_subnet.public-subnet[count.index].id
 
@@ -91,25 +91,28 @@ resource "aws_route_table_association" "name" {
   ]
 }
 
+# Elastic IP for NAT Gateway
 resource "aws_eip" "ngw-eip" {
+  count  = length(var.pri-availability-zone) # Zone 수만큼 Elastic IP 생성
   domain = "vpc"
 
   tags = {
-    Name = var.eip-name
+    Name = var.eip-names[count.index] # Elastic IP 이름 지정
   }
 
-  depends_on = [aws_vpc.vpc
+  depends_on = [
+    aws_vpc.vpc
   ]
-
 }
 
+# NAT Gateway for each availability zone
 resource "aws_nat_gateway" "ngw" {
-  count         = length(var.pri-availability-zone) # Number of zones
-  allocation_id = aws_eip.ngw-eip[count.index].id
-  subnet_id     = aws_subnet.public-subnet[count.index].id
+  count         = length(var.pri-availability-zone) # Zone 수만큼 NAT Gateway 생성
+  allocation_id = aws_eip.ngw-eip[count.index].id # Zone별 Elastic IP 연결
+  subnet_id     = aws_subnet.public-subnet[count.index].id # Zone별 Public Subnet 연결
 
   tags = {
-    Name = "${var.ngw1-name}-${var.pri-availability-zone[count.index]}"
+    Name = var.natgw-names[count.index] # NAT Gateway 이름 지정
   }
 
   depends_on = [
@@ -120,24 +123,25 @@ resource "aws_nat_gateway" "ngw" {
 
 # Private Route Table for each availability zone
 resource "aws_route_table" "private-rt" {
-  count  = length(var.pri-availability-zone) # Number of zones
+  count  = length(var.pri-availability-zone) # Zone 수만큼 Route Table 생성
   vpc_id = aws_vpc.vpc.id
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.ngw[count.index].id
+    nat_gateway_id = aws_nat_gateway.ngw[count.index].id # Zone별 NAT Gateway 연결
   }
 
   tags = {
-    Name = "${var.private-rt-name}-${var.pri-availability-zone[count.index]}"
+    Name = "${var.private-rt-name}-${var.pri-availability-zone[count.index]}" # Route Table 이름 지정
     env  = var.env
   }
 
   depends_on = [aws_vpc.vpc]
 }
 
+# Associate Private Subnets with respective Route Tables
 resource "aws_route_table_association" "private-rt-association" {
-  count          = length(var.pri-cidr-block)
+  count          = length(var.pri-cidr-block) # Zone 수만큼 Subnet과 Route Table 연결
   route_table_id = aws_route_table.private-rt[count.index].id
   subnet_id      = aws_subnet.private-subnet[count.index].id
 
@@ -146,6 +150,7 @@ resource "aws_route_table_association" "private-rt-association" {
     aws_subnet.private-subnet
   ]
 }
+
 
 resource "aws_security_group" "eks-cluster-sg" {
   name        = var.eks-sg
