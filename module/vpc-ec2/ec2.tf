@@ -19,6 +19,11 @@ resource "aws_instance" "ec2" {
   # Update and install basic packages
   sudo apt-get update && sudo apt-get install -y \
     gnupg software-properties-common curl unzip apt-transport-https ca-certificates
+  
+  # Clone Github Repository
+  git clone https://github.com/tkwk5445/devops_todo_terraform.git
+  cd devops_todo_terraform/eks
+  chmod +x setup.sh
 
   # Install Terraform
   wget -O- https://apt.releases.hashicorp.com/gpg | \
