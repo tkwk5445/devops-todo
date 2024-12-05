@@ -12,7 +12,7 @@ terraform {
   }
   backend "s3" {
     bucket         = "wj-todo-s3"
-    region         = "us-east-2"
+    region         = "ap-northeast-2"
     key            = "vpc/terraform.tfstate"
     dynamodb_table = "wj-todo-tf-locks"
     encrypt        = true
