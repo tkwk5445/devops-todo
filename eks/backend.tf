@@ -15,10 +15,10 @@ terraform {
     }
   }
   backend "s3" {
-    bucket         = "wookj-todo-s3"
+    bucket         = "wookja-todo-s3"
     region         = "ap-northeast-2"
     key            = "eks/terraform.tfstate"
-    dynamodb_table = "wj-todo-tf-locks"
+    dynamodb_table = "wookja-todo-tf-locks"
     encrypt        = true
   }
 }
