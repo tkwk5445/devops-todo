@@ -44,43 +44,10 @@ resource "aws_instance" "ec2" {
   curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
   sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
-  # Install Docker
-  sudo apt-get install -y \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    software-properties-common
-  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-  sudo add-apt-repository \
-    "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-  sudo apt-get update && sudo apt-get install -y docker-ce
-  sudo usermod -aG docker $USER
-
-  # Enable and start Docker service
-  sudo systemctl enable docker
-  sudo systemctl start docker
-
-  # Install Docker Compose
-  sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep 'tag_name' | cut -d '"' -f 4)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-  sudo chmod +x /usr/local/bin/docker-compose
-  sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-
-  # Verify Docker Compose installation
-  docker-compose --version
-
-  # Install Jenkins (as a container)
-  sudo docker network create jenkins
-  sudo docker volume create jenkins-data
-  sudo docker run \
-    -d \
-    --name jenkins \
-    --network jenkins \
-    -p 8080:8080 -p 50000:50000 \
-    -v jenkins-data:/var/jenkins_home \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    jenkins/jenkins:lts
-
-  # Output Jenkins initial admin password
-  sudo docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+  # Install Docker & Docker Compose & Jenkins
+  sudo apt update -y && sudo apt install -y zip
+  cd /home/ubuntu && sudo git clone https://github.com/tkwk5445/jenkins_Scripts.git 
+  cd jenkins_Scripts/ && sudo chmod u+x *.sh
+  sudo ./install-docker.sh && sudo ./install-docker-compose.sh && docker-compose up -d --build
 EOF
 }
