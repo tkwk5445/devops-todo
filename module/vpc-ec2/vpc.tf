@@ -179,7 +179,6 @@ resource "aws_security_group" "eks-cluster-sg" {
 
 resource "aws_security_group" "ec2-sg" {
   name        = var.ec2-sg
-  description = "Allow 443 from Jump Server only"
 
   vpc_id = aws_vpc.vpc.id
 
@@ -205,6 +204,6 @@ resource "aws_security_group" "ec2-sg" {
   }
 
   tags = {
-    Name = var.eks-sg
+    Name = var.ec2-sg
   }
 }
