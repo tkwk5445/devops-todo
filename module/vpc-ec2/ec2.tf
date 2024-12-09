@@ -58,30 +58,34 @@ resource "aws_instance" "ec2" {
   sudo chmod 666 /var/run/docker.sock
   newgrp docker
 
-  # 5. Jenkins 컨테이너 실행 (포트 80)
+  # 5. Jenkins 컨테이너 실행 (호스트 포트 8080)
   echo "Setting up Jenkins container..."
   docker network create jenkins || true
   docker volume create jenkins_home || true
   docker run --name jenkins --restart always -d \
       --network jenkins \
-      -p 80:8080 -p 50000:50000 \
+      -p 8080:8080 -p 50000:50000 \
       -v /var/run/docker.sock:/var/run/docker.sock \
       -v jenkins_home:/var/jenkins_home \
       -u root \
       jenkins/jenkins:lts
 
-  # 6. Docker CLI 설치 및 권한 부여
-  echo "Configuring Docker CLI inside Jenkins container..."
+  # 6. Docker CLI 및 AWS CLI 설치 및 권한 부여
+  echo "Configuring Docker CLI and AWS CLI inside Jenkins container..."
   docker exec -u root jenkins bash -c "
       apt update &&
-      apt install -y apt-transport-https ca-certificates curl gnupg lsb-release &&
+      apt install -y apt-transport-https ca-certificates curl gnupg lsb-release unzip &&
       curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg &&
       echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable' > /etc/apt/sources.list.d/docker.list &&
       apt update &&
-      apt install -y docker-ce docker-ce-cli containerd.io
+      apt install -y docker-ce docker-ce-cli containerd.io &&
+      curl 'https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip' -o 'awscliv2.zip' &&
+      unzip awscliv2.zip &&
+      ./aws/install &&
+      rm -rf awscliv2.zip aws
   "
   docker exec -u root jenkins bash -c "usermod -aG docker jenkins"
 
-  echo "Setup complete! Jenkins is accessible at http://<your-server-ip>. Use 'sudo docker exec -it jenkins bash' to access the container."
+  echo "Setup complete! Jenkins is accessible at http://<your-server-ip>:8080. Use 'sudo docker exec -it jenkins bash' to access the container."
   EOF
-} 
+}
